@@ -1,0 +1,197 @@
+{
+  "info": {
+    "name": "AI Voice Receptionist Backend",
+    "description": "API collection for QuensultingAI Dental Clinic.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Services",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/services",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "services"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Availability",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/availability?date=2026-07-10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "availability"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-07-10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Book Appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"caller_name\": \"John Doe\",\n  \"caller_phone\": \"9876543210\",\n  \"caller_email\": \"johndoe@example.com\",\n  \"selected_service\": \"dental_cleaning\",\n  \"preferred_date\": \"2026-07-10\",\n  \"preferred_time\": \"10:00\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/appointments/book",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "appointments",
+            "book"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cancel Appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"caller_name\": \"John Doe\",\n  \"caller_phone\": \"9876543210\",\n  \"cancel_reason\": \"Feeling better\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/appointments/cancel",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "appointments",
+            "cancel"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reschedule Appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"caller_name\": \"John Doe\",\n  \"caller_phone\": \"9876543210\",\n  \"new_date\": \"2026-07-12\",\n  \"new_time\": \"14:30\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/appointments/reschedule",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "appointments",
+            "reschedule"
+          ]
+        }
+      }
+    },
+    {
+      "name": "FAQ",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Where are you located?\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/faq",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "faq"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Human Transfer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"caller_name\": \"John Doe\",\n  \"caller_phone\": \"9876543210\",\n  \"reason\": \"emergency\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/human-transfer",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "human-transfer"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ]
+}

@@ -302,6 +302,27 @@ The `GET /health` endpoint now provides comprehensive diagnostic data:
 }
 ```
 
+## Testing & Validation (Phase 4)
+
+A comprehensive testing and validation suite is documented in [`TESTING.md`](TESTING.md). 
+You can use the provided [`postman_collection.json`](postman_collection.json) to quickly test all endpoints locally.
+
+### Validation Strategy
+- **Strict Pydantic Validation**: Ensures bad input (invalid Indian phone numbers, past dates, closed clinic days) is immediately rejected with `422 Unprocessable Content`.
+- **Fail-safe Integrations**: Both Google Sheets and SMTP Email integrations operate defensively. If they fail, they are caught, logged securely, and bypassed, ensuring the core booking API continues to return `200 OK` to RetellAI.
+- **Global Error Handling**: Uncaught exceptions are sanitized into `500 Internal Server Error` responses, preventing stack trace leaks while returning the `request_id` for debugging.
+
+### Known Limitations
+- Email templates are currently plain-text only.
+- Cancellation and rescheduling APIs currently only log the action, returning success without altering the Google Sheet (this requires a database or more complex Sheets logic).
+- Phone validation is strictly constrained to 10-digit Indian mobile numbers.
+
+### Future Improvements
+- **Database Layer**: Introduce PostgreSQL/SQLAlchemy for robust transactional storage, enabling full cancellation/rescheduling logic.
+- **Authentication**: Implement API Key authentication for the webhooks to ensure only RetellAI can call them.
+- **API Versioning**: Introduce `/api/v1` routing once the initial RetellAI rollout completes and stabilizes.
+- **Rich Emails**: Add HTML templates and ICS calendar invites to the confirmation emails.
+
 ## Phases
 
 | Phase | Feature                                | Status |
@@ -311,6 +332,8 @@ The `GET /health` endpoint now provides comprehensive diagnostic data:
 | 3.1   | Webhook APIs for RetellAI              | ✅ Done |
 | 3.2   | Google Sheets booking persistence      | ✅ Done |
 | 3.3   | Email confirmations via SMTP           | ✅ Done |
+| 3.4   | Production observability hardening     | ✅ Done |
+| 4     | Testing, Validation, Documentation     | ✅ Done |
 | 5     | RetellAI agent integration             | Planned |
 
 ## License
