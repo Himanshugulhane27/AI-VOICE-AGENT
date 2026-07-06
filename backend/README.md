@@ -242,11 +242,24 @@ Confirmation email sent successfully for booking BK-XXXXX-XXXX
 
 The codebase follows **clean architecture** principles:
 
-```
-Router → Service → External Integration
-  ↓         ↓              ↓
- HTTP    Business      Google Sheets
- layer    logic          API
+```text
+       HTTP Request
+            ↓
+  +-------------------+
+  |    FastAPI App    | (Middleware, Request IDs, Exceptions)
+  +-------------------+
+            ↓
+  +-------------------+
+  |      Routers      | (Pydantic Validation, Health, Webhooks)
+  +-------------------+
+            ↓
+  +-------------------+
+  |     Services      | (Core Business Logic)
+  +-------------------+
+       ↙         ↘
++------------+ +------------+
+| Google API | |    SMTP    |
++------------+ +------------+
 ```
 
 - **`config/`** — Environment loading and validation.
@@ -254,7 +267,40 @@ Router → Service → External Integration
 - **`schemas/`** — Pydantic models for request/response serialization and validation.
 - **`services/`** — Business logic, isolated from HTTP transport.
 - **`models/`** — Domain entities, enums, and constants.
-- **`utils/`** — Cross-cutting concerns (logging, validators).
+- **`utils/`** — Cross-cutting concerns (logging, validators, context variables).
+
+## Production Readiness (Phase 3.4)
+
+The backend has been hardened for production deployment with the following enhancements:
+
+### 1. Request Context & Traceability
+- Every incoming HTTP request is assigned a unique `request_id` (UUIDv4).
+- The `request_id` is propagated through all service layers using `contextvars`.
+- The `request_id` is injected into a custom `X-Request-ID` HTTP response header.
+- The `request_id` is included in all error responses (`422` and `500`) for client-side tracking.
+
+### 2. Structured Logging
+- The application uses structured, deterministic logging suitable for ELK, Datadog, or Stackdriver.
+- Logs include: `timestamp`, `level`, `logger`, `request_id` (if in context), and `message`.
+- A global middleware measures and logs request `duration` and HTTP `status`.
+
+### 3. Resilience & Global Error Handling
+- A global exception handler catches all unhandled exceptions, logs the secure stack trace internally, and returns a sanitized `500 Internal Server Error` containing the `request_id`.
+- Services (`GoogleSheetsService`, `EmailService`) never expose raw API exceptions or stack traces to the end-user.
+- Fail-fast configuration validation occurs on application startup (via `lifespan`).
+
+### 4. Enhanced Health Endpoint
+The `GET /health` endpoint now provides comprehensive diagnostic data:
+```json
+{
+  "status": "healthy",
+  "environment": "production",
+  "version": "0.2.0",
+  "timestamp": "2026-07-06T12:34:56.789123+00:00",
+  "google_sheets_status": "enabled",
+  "smtp_status": "disabled"
+}
+```
 
 ## Phases
 

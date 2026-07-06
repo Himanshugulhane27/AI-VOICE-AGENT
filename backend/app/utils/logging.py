@@ -24,13 +24,23 @@ class StructuredFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format a log record as a structured line."""
+        from app.utils.context import request_id_ctx
+
         timestamp = datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat()
-        return (
-            f"timestamp={timestamp} "
-            f"level={record.levelname} "
-            f"logger={record.name} "
-            f"message={record.getMessage()}"
-        )
+        
+        log_parts = [
+            f"timestamp={timestamp}",
+            f"level={record.levelname}",
+            f"logger={record.name}",
+        ]
+        
+        req_id = request_id_ctx.get("")
+        if req_id:
+            log_parts.append(f"request_id={req_id}")
+            
+        log_parts.append(f"message={record.getMessage()}")
+        
+        return " ".join(log_parts)
 
 
 def setup_logging(level: str = "info") -> None:

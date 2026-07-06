@@ -14,7 +14,13 @@ import hashlib
 import logging
 from datetime import datetime, timezone
 
-from app.models.domain import SERVICE_DISPLAY_NAMES, DentalService
+from app.models.domain import (
+    SERVICE_DISPLAY_NAMES,
+    DentalService,
+    MSG_BOOKING_SUCCESS,
+    MSG_CANCEL_SUCCESS,
+    MSG_RESCHEDULE_SUCCESS,
+)
 from app.schemas.appointments import (
     BookAppointmentRequest,
     BookAppointmentResponse,
@@ -131,7 +137,7 @@ def book_appointment(request: BookAppointmentRequest) -> BookAppointmentResponse
 
     return BookAppointmentResponse(
         success=True,
-        message=f"Appointment booked successfully for {request.caller_name}.",
+        message=MSG_BOOKING_SUCCESS.format(name=request.caller_name),
         booking_id=booking_id,
         caller_name=request.caller_name,
         caller_phone=request.caller_phone,
@@ -156,7 +162,7 @@ def cancel_appointment(request: CancelAppointmentRequest) -> CancelAppointmentRe
 
     return CancelAppointmentResponse(
         success=True,
-        message=f"Appointment for {request.caller_name} has been cancelled.",
+        message=MSG_CANCEL_SUCCESS.format(name=request.caller_name),
         caller_name=request.caller_name,
         caller_phone=request.caller_phone,
     )
@@ -180,9 +186,10 @@ def reschedule_appointment(
 
     return RescheduleAppointmentResponse(
         success=True,
-        message=(
-            f"Appointment for {request.caller_name} has been rescheduled to "
-            f"{request.new_date.isoformat()} at {request.new_time.strftime('%H:%M')}."
+        message=MSG_RESCHEDULE_SUCCESS.format(
+            name=request.caller_name,
+            date=request.new_date.isoformat(),
+            time=request.new_time.strftime('%H:%M')
         ),
         caller_name=request.caller_name,
         caller_phone=request.caller_phone,

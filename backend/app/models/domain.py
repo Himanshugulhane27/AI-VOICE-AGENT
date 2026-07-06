@@ -47,3 +47,9 @@ SERVICE_DISPLAY_NAMES: dict[DentalService, str] = {
     DentalService.TOOTH_EXTRACTION: "Tooth Extraction",
     DentalService.GENERAL_DENTAL_CONSULTATION: "General Dental Consultation",
 }
+
+# -- Response Messages -------------------------------------------------------
+
+MSG_BOOKING_SUCCESS = "Appointment booked successfully for {name}."
+MSG_CANCEL_SUCCESS = "Appointment for {name} has been cancelled."
+MSG_RESCHEDULE_SUCCESS = "Appointment for {name} has been rescheduled to {date} at {time}."

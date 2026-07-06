@@ -12,3 +12,4 @@ class BaseResponse(BaseModel):
 
     success: bool
     message: str
+    request_id: str | None = None
