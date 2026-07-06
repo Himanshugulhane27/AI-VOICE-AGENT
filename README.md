@@ -270,11 +270,3 @@ https://ai-voice-agent-n9qs.onrender.com/openapi.json
 - Analytics Dashboard
 
 ---
-
-# 👨‍💻 Author
-
-**Himanshu Gulhane**
-
-GitHub: https://github.com/Himanshugulhane27
-
-Built as part of the **AI Voice Receptionist Internship Assignment**.
