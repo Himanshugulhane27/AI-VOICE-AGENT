@@ -173,26 +173,6 @@ Conversation capabilities include:
 
 ---
 
-# 📷 Screenshots
-
-## Swagger UI
-
-> Add screenshot here
-
----
-
-## Retell AI Flow
-
-> Add screenshot here
-
----
-
-## Render Deployment
-
-> Add screenshot here
-
----
-
 # ⚙️ Running Locally
 
 ## Clone Repository
