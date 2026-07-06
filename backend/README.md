@@ -1,342 +1,300 @@
-# AI Voice Receptionist — Backend
+# 🦷 AI Voice Receptionist for Dental Clinic
 
-Production-ready FastAPI backend for the **QuensultingAI Dental Clinic** AI-powered voice receptionist.
+An AI-powered Voice Receptionist built using **FastAPI** and **Retell AI** for QuensultingAI Dental Clinic.
 
-## Project Structure
+The assistant can answer patient queries, book appointments, reschedule appointments, cancel appointments, provide clinic information, and transfer urgent calls to a human receptionist.
 
+---
+
+# 🚀 Live Demo
+
+### Backend API
+
+https://ai-voice-agent-n9qs.onrender.com
+
+### Swagger Documentation
+
+https://ai-voice-agent-n9qs.onrender.com/docs
+
+### GitHub Repository
+
+https://github.com/Himanshugulhane27/AI-VOICE-AGENT
+
+---
+
+# ✨ Features
+
+- AI-powered Dental Receptionist
+- Appointment Booking
+- Appointment Cancellation
+- Appointment Rescheduling
+- FAQ Handling
+- Human Receptionist Transfer
+- Appointment Availability Check
+- Clinic Service Information
+- REST API with FastAPI
+- OpenAPI / Swagger Documentation
+- Production Deployment on Render
+- Retell AI Conversation Flow Integration
+
+---
+
+# 🏗️ Tech Stack
+
+### Backend
+
+- FastAPI
+- Python
+- Uvicorn
+- Pydantic
+- Pydantic Settings
+
+### Voice AI
+
+- Retell AI
+
+### Deployment
+
+- Render
+
+### Integrations
+
+- Google Sheets (Optional)
+- SMTP Email Service (Optional)
+
+---
+
+# 📁 Project Structure
+
+```text
+AI-VOICE-AGENT/
+│
+├── backend/
+│   ├── app/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── schemas/
+│   │   ├── models/
+│   │   ├── utils/
+│   │   └── main.py
+│   │
+│   ├── docs/
+│   ├── requirements.txt
+│   ├── README.md
+│   ├── TESTING.md
+│   ├── postman_collection.json
+│   └── .env.example
+│
+└── openapi.json
 ```
-backend/
-├── main.py                          # CLI entry point (python main.py)
-├── requirements.txt                 # Python dependencies
-├── .env.example                     # Environment variable template
-├── .env                             # Local environment overrides (git-ignored)
-├── docs/
-│   └── retellai_conversation_flow.md  # Phase 2 — conversation design
-└── app/
-    ├── __init__.py
-    ├── main.py                      # FastAPI application factory
-    ├── config/
-    │   ├── __init__.py
-    │   └── settings.py              # Pydantic Settings (typed env loading)
-    ├── routes/
-    │   ├── __init__.py
-    │   ├── health.py                # GET  /health
-    │   ├── appointments.py          # POST /appointments/{book,cancel,reschedule}
-    │   ├── faq.py                   # POST /faq
-    │   ├── transfer.py              # POST /human-transfer
-    │   └── clinic.py                # GET  /services, /availability
-    ├── services/
-    │   ├── __init__.py
-    │   ├── appointment_service.py   # Booking / cancel / reschedule logic
-    │   ├── faq_service.py           # FAQ knowledge base matching
-    │   ├── transfer_service.py      # Human transfer event logging
-    │   ├── clinic_service.py        # Service catalogue & availability
-    │   └── google_sheets_service.py # Google Sheets persistence (Phase 3.2)
-    ├── models/
-    │   ├── __init__.py
-    │   └── domain.py                # Enums, constants, clinic metadata
-    ├── schemas/
-    │   ├── __init__.py
-    │   ├── base.py                  # BaseResponse envelope
-    │   ├── health.py                # Health response
-    │   ├── appointments.py          # Book / cancel / reschedule schemas
-    │   ├── faq.py                   # FAQ schemas
-    │   ├── transfer.py              # Human transfer schemas
-    │   └── clinic.py                # Services / availability schemas
-    └── utils/
-        ├── __init__.py
-        ├── logging.py               # Structured logging configuration
-        └── validators.py            # Phone, date, time validation
+
+---
+
+# 🏛️ Architecture
+
+```text
+                     Caller
+                        │
+                        ▼
+              Retell AI Voice Agent
+                        │
+                        ▼
+                 Intent Detection
+                        │
+ ┌──────────────┬──────────────┬──────────────┬──────────────┐
+ │              │              │              │              │
+ ▼              ▼              ▼              ▼              ▼
+Booking     Cancel      Reschedule        FAQ      Human Transfer
+ │              │              │              │              │
+ └──────────────┴──────────────┴──────────────┴──────────────┘
+                        │
+                        ▼
+                 FastAPI Backend
+                        │
+                        ▼
+             Business Logic Layer
+                        │
+                        ▼
+ Google Sheets / Email (Optional)
 ```
 
-## Quick Start
+---
 
-### 1. Create a virtual environment
+# 📡 API Endpoints
+
+## Health
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/health` |
+
+## Appointment APIs
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/appointments/book` |
+| POST | `/appointments/cancel` |
+| POST | `/appointments/reschedule` |
+
+## FAQ
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/faq` |
+
+## Human Transfer
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/human-transfer` |
+
+## Clinic APIs
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/services` |
+| GET | `/availability` |
+
+---
+
+# 🤖 Retell AI Integration
+
+The backend exposes webhook endpoints that integrate with Retell AI Custom Functions.
+
+Conversation capabilities include:
+
+- Welcome Greeting
+- Intent Detection
+- Book Appointment
+- Cancel Appointment
+- Reschedule Appointment
+- FAQ Handling
+- Human Transfer
+
+---
+
+# 📷 Screenshots
+
+## Swagger UI
+
+> Add screenshot here
+
+---
+
+## Retell AI Flow
+
+> Add screenshot here
+
+---
+
+## Render Deployment
+
+> Add screenshot here
+
+---
+
+# ⚙️ Running Locally
+
+## Clone Repository
 
 ```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
+git clone https://github.com/Himanshugulhane27/AI-VOICE-AGENT.git
 ```
 
-### 2. Install dependencies
+```bash
+cd AI-VOICE-AGENT/backend
+```
+
+## Create Virtual Environment
+
+```bash
+python3 -m venv .venv
+```
+
+## Activate Environment
+
+### macOS / Linux
+
+```bash
+source .venv/bin/activate
+```
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure environment
-
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### 4. Run the server
-
-**Option A — uvicorn CLI (recommended for development):**
+## Run the Server
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-**Option B — Python script:**
+Open:
 
-```bash
-python main.py
+```
+http://127.0.0.1:8000/docs
 ```
 
-The server starts on `http://0.0.0.0:8000` by default.
+---
 
-### 5. Verify
+# 🧪 Testing
 
-```bash
-curl http://localhost:8000/health
-# → {"status":"healthy"}
+Use Swagger:
+
+```
+/docs
 ```
 
-Interactive API docs are available at `http://localhost:8000/docs`.
+Or import:
 
-## API Endpoints
-
-| Method | Path                        | Description                  |
-|--------|-----------------------------|------------------------------|
-| GET    | `/health`                   | Service health check         |
-| GET    | `/services`                 | List dental services         |
-| GET    | `/availability?date=...`    | Check time-slot availability |
-| POST   | `/appointments/book`        | Book an appointment          |
-| POST   | `/appointments/cancel`      | Cancel an appointment        |
-| POST   | `/appointments/reschedule`  | Reschedule an appointment    |
-| POST   | `/faq`                      | Answer a caller's question   |
-| POST   | `/human-transfer`           | Request human agent transfer |
-
-## Configuration
-
-All configuration is loaded from environment variables (or a `.env` file) via **pydantic-settings**.
-
-| Variable                       | Default   | Description                            |
-|--------------------------------|-----------|----------------------------------------|
-| `HOST`                         | `0.0.0.0` | Server bind address                    |
-| `PORT`                         | `8000`    | Server bind port                       |
-| `LOG_LEVEL`                    | `info`    | Logging verbosity                      |
-| `GOOGLE_SHEET_ID`              | —         | Google Sheets spreadsheet ID           |
-| `GOOGLE_SERVICE_ACCOUNT_FILE`  | —         | Path to service account JSON key file  |
-| `SMTP_HOST`                    | —         | SMTP server hostname (e.g. smtp.gmail.com) |
-| `SMTP_PORT`                    | `587`     | SMTP server port                       |
-| `SMTP_USERNAME`                | —         | SMTP login username                    |
-| `SMTP_PASSWORD`                | —         | SMTP login password or App Password    |
-| `SMTP_FROM_EMAIL`              | —         | Sender email address                   |
-| `SMTP_FROM_NAME`               | —         | Sender display name                    |
-| `RETELL_API_KEY`               | —         | RetellAI API key (future)              |
-
-## Google Sheets Setup
-
-The backend persists every successful booking to a Google Sheets spreadsheet.
-If the credentials are not configured, the app starts normally and logs a
-warning — bookings are still processed but not persisted.
-
-### Step 1 — Create a Google Cloud Service Account
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project (or select an existing one).
-3. Navigate to **APIs & Services → Library**.
-4. Enable the **Google Sheets API** and the **Google Drive API**.
-5. Navigate to **APIs & Services → Credentials**.
-6. Click **Create Credentials → Service Account**.
-7. Name it (e.g. `voice-receptionist-sheets`) and click **Done**.
-8. Under the new service account, go to the **Keys** tab.
-9. Click **Add Key → Create new key → JSON**.
-10. Save the downloaded JSON file to your project (e.g. `backend/credentials.json`).
-
-### Step 2 — Create & Share the Spreadsheet
-
-1. Create a new Google Sheets spreadsheet.
-2. Copy the spreadsheet ID from the URL:
-   ```
-   https://docs.google.com/spreadsheets/d/<THIS_IS_THE_ID>/edit
-   ```
-3. Share the spreadsheet with the service account email
-   (found in the JSON key file as `client_email`) and give it **Editor** access.
-
-### Step 3 — Configure Environment Variables
-
-```bash
-# In your .env file:
-GOOGLE_SHEET_ID=your_spreadsheet_id_here
-GOOGLE_SERVICE_ACCOUNT_FILE=credentials.json
+```
+postman_collection.json
 ```
 
-### Step 4 — Verify
+into Postman.
 
-Start the server. On the first booking request, the service will:
+---
 
-1. Authenticate using the service account.
-2. Open the spreadsheet by ID.
-3. Create an **Appointments** worksheet if it doesn't exist.
-4. Insert the header row if it's missing.
-5. Append the booking as a new row.
+# 🌐 Deployment
 
-Check the logs for:
-```
-Google Sheets connected — spreadsheet=<ID> worksheet=Appointments
-```
+### Backend
 
-### Spreadsheet Columns
+https://ai-voice-agent-n9qs.onrender.com
 
-| Column             | Example                        |
-|--------------------|--------------------------------|
-| Booking ID         | BK-20260710-A1B2               |
-| Name               | Rahul Sharma                   |
-| Phone              | 9876543210                     |
-| Email              | rahul@gmail.com                |
-| Service            | Teeth Whitening                |
-| Appointment Date   | 2026-07-10                     |
-| Appointment Time   | 11:00                          |
-| Booking Status     | Confirmed                      |
-| Created At         | 2026-07-06T12:32:25+00:00      |
+### Swagger
 
-## Email Setup (SMTP)
+https://ai-voice-agent-n9qs.onrender.com/docs
 
-The backend sends a booking confirmation email after a successful appointment booking is persisted to Google Sheets. 
-If the SMTP credentials are not configured, the app operates in **disabled mode** — it logs a warning, skips email sending, and still processes the booking successfully.
+### OpenAPI
 
-### Step 1 — Generate a Gmail App Password (if using Gmail)
+https://ai-voice-agent-n9qs.onrender.com/openapi.json
 
-If you are using a standard Gmail account or Google Workspace, you cannot use your regular password. You must use an App Password:
-1. Go to your [Google Account Manage page](https://myaccount.google.com/).
-2. Navigate to **Security**.
-3. Ensure **2-Step Verification** is turned on.
-4. Go to **2-Step Verification** and scroll down to **App passwords**.
-5. Create a new App Password (e.g., name it "Voice Receptionist").
-6. Copy the 16-character password generated.
+---
 
-### Step 2 — Configure Environment Variables
+# 📌 Future Improvements
 
-```bash
-# In your .env file:
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=your_email@gmail.com
-SMTP_PASSWORD=your_16_char_app_password
-SMTP_FROM_EMAIL=your_email@gmail.com
-SMTP_FROM_NAME="QuensultingAI Dental"
-```
+- Google Calendar Integration
+- PostgreSQL Database
+- Twilio Voice Integration
+- Authentication & API Keys
+- Appointment Reminders
+- Production-grade Monitoring
+- Analytics Dashboard
 
-### Step 3 — Testing
+---
 
-Start the server. Submit a booking request with a valid `caller_email`.
-The service will:
-1. Validate the booking.
-2. Persist the row to Google Sheets.
-3. Authenticate with the SMTP server and send a plain-text confirmation email to the caller.
-4. Return a successful booking API response.
+# 👨‍💻 Author
 
-Check the logs for:
-```
-Email service enabled — host=smtp.gmail.com port=587 from_email=your_email@gmail.com
-...
-Confirmation email sent successfully for booking BK-XXXXX-XXXX
-```
+**Himanshu Gulhane**
 
-## Architecture
+GitHub: https://github.com/Himanshugulhane27
 
-The codebase follows **clean architecture** principles:
-
-```text
-       HTTP Request
-            ↓
-  +-------------------+
-  |    FastAPI App    | (Middleware, Request IDs, Exceptions)
-  +-------------------+
-            ↓
-  +-------------------+
-  |      Routers      | (Pydantic Validation, Health, Webhooks)
-  +-------------------+
-            ↓
-  +-------------------+
-  |     Services      | (Core Business Logic)
-  +-------------------+
-       ↙         ↘
-+------------+ +------------+
-| Google API | |    SMTP    |
-+------------+ +------------+
-```
-
-- **`config/`** — Environment loading and validation.
-- **`routes/`** — Thin HTTP layer. Each router handles a feature area.
-- **`schemas/`** — Pydantic models for request/response serialization and validation.
-- **`services/`** — Business logic, isolated from HTTP transport.
-- **`models/`** — Domain entities, enums, and constants.
-- **`utils/`** — Cross-cutting concerns (logging, validators, context variables).
-
-## Production Readiness (Phase 3.4)
-
-The backend has been hardened for production deployment with the following enhancements:
-
-### 1. Request Context & Traceability
-- Every incoming HTTP request is assigned a unique `request_id` (UUIDv4).
-- The `request_id` is propagated through all service layers using `contextvars`.
-- The `request_id` is injected into a custom `X-Request-ID` HTTP response header.
-- The `request_id` is included in all error responses (`422` and `500`) for client-side tracking.
-
-### 2. Structured Logging
-- The application uses structured, deterministic logging suitable for ELK, Datadog, or Stackdriver.
-- Logs include: `timestamp`, `level`, `logger`, `request_id` (if in context), and `message`.
-- A global middleware measures and logs request `duration` and HTTP `status`.
-
-### 3. Resilience & Global Error Handling
-- A global exception handler catches all unhandled exceptions, logs the secure stack trace internally, and returns a sanitized `500 Internal Server Error` containing the `request_id`.
-- Services (`GoogleSheetsService`, `EmailService`) never expose raw API exceptions or stack traces to the end-user.
-- Fail-fast configuration validation occurs on application startup (via `lifespan`).
-
-### 4. Enhanced Health Endpoint
-The `GET /health` endpoint now provides comprehensive diagnostic data:
-```json
-{
-  "status": "healthy",
-  "environment": "production",
-  "version": "0.2.0",
-  "timestamp": "2026-07-06T12:34:56.789123+00:00",
-  "google_sheets_status": "enabled",
-  "smtp_status": "disabled"
-}
-```
-
-## Testing & Validation (Phase 4)
-
-A comprehensive testing and validation suite is documented in [`TESTING.md`](TESTING.md). 
-You can use the provided [`postman_collection.json`](postman_collection.json) to quickly test all endpoints locally.
-
-### Validation Strategy
-- **Strict Pydantic Validation**: Ensures bad input (invalid Indian phone numbers, past dates, closed clinic days) is immediately rejected with `422 Unprocessable Content`.
-- **Fail-safe Integrations**: Both Google Sheets and SMTP Email integrations operate defensively. If they fail, they are caught, logged securely, and bypassed, ensuring the core booking API continues to return `200 OK` to RetellAI.
-- **Global Error Handling**: Uncaught exceptions are sanitized into `500 Internal Server Error` responses, preventing stack trace leaks while returning the `request_id` for debugging.
-
-### Known Limitations
-- Email templates are currently plain-text only.
-- Cancellation and rescheduling APIs currently only log the action, returning success without altering the Google Sheet (this requires a database or more complex Sheets logic).
-- Phone validation is strictly constrained to 10-digit Indian mobile numbers.
-
-### Future Improvements
-- **Database Layer**: Introduce PostgreSQL/SQLAlchemy for robust transactional storage, enabling full cancellation/rescheduling logic.
-- **Authentication**: Implement API Key authentication for the webhooks to ensure only RetellAI can call them.
-- **API Versioning**: Introduce `/api/v1` routing once the initial RetellAI rollout completes and stabilizes.
-- **Rich Emails**: Add HTML templates and ICS calendar invites to the confirmation emails.
-
-## Phases
-
-| Phase | Feature                                | Status |
-|-------|----------------------------------------|--------|
-| 1     | FastAPI foundation & health check      | ✅ Done |
-| 2     | RetellAI conversation flow design      | ✅ Done |
-| 3.1   | Webhook APIs for RetellAI              | ✅ Done |
-| 3.2   | Google Sheets booking persistence      | ✅ Done |
-| 3.3   | Email confirmations via SMTP           | ✅ Done |
-| 3.4   | Production observability hardening     | ✅ Done |
-| 4     | Testing, Validation, Documentation     | ✅ Done |
-| 5     | RetellAI agent integration             | Planned |
-
-## License
-
-Private — all rights reserved.
-
+Built as part of the **AI Voice Receptionist Internship Assignment**.
