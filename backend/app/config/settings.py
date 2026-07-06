@@ -31,9 +31,13 @@ class Settings(BaseSettings):
     google_sheet_id: str = ""
     google_service_account_file: str = ""
 
-    # ---- Email / SMTP (future) --------------------------------------------
-    smtp_email: str = ""
+    # ---- Email / SMTP ------------------------------------------------------
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
     smtp_password: str = ""
+    smtp_from_email: str = ""
+    smtp_from_name: str = ""
 
     # ---- RetellAI (future) ------------------------------------------------
     retell_api_key: str = ""

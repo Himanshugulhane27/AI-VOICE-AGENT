@@ -113,7 +113,20 @@ def book_appointment(request: BookAppointmentRequest) -> BookAppointmentResponse
             booking_id,
         )
 
-    # ---- Step 3: Build success response (only reached if persist succeeded) -
+    # ---- Step 3: Send confirmation email (only if persist succeeded) -------
+    from app.services.email_service import get_email_service
+    if request.caller_email:
+        email_service = get_email_service()
+        email_service.send_booking_confirmation(
+            booking_id=booking_id,
+            caller_name=request.caller_name,
+            caller_email=request.caller_email,
+            selected_service=service_name,
+            preferred_date=preferred_date_str,
+            preferred_time=preferred_time_str,
+        )
+
+    # ---- Step 4: Build success response ------------------------------------
     logger.info("Booking confirmed — id=%s", booking_id)
 
     return BookAppointmentResponse(

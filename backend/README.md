@@ -121,8 +121,12 @@ All configuration is loaded from environment variables (or a `.env` file) via **
 | `LOG_LEVEL`                    | `info`    | Logging verbosity                      |
 | `GOOGLE_SHEET_ID`              | —         | Google Sheets spreadsheet ID           |
 | `GOOGLE_SERVICE_ACCOUNT_FILE`  | —         | Path to service account JSON key file  |
-| `SMTP_EMAIL`                   | —         | Sender email address (future)          |
-| `SMTP_PASSWORD`                | —         | SMTP password (future)                 |
+| `SMTP_HOST`                    | —         | SMTP server hostname (e.g. smtp.gmail.com) |
+| `SMTP_PORT`                    | `587`     | SMTP server port                       |
+| `SMTP_USERNAME`                | —         | SMTP login username                    |
+| `SMTP_PASSWORD`                | —         | SMTP login password or App Password    |
+| `SMTP_FROM_EMAIL`              | —         | Sender email address                   |
+| `SMTP_FROM_NAME`               | —         | Sender display name                    |
 | `RETELL_API_KEY`               | —         | RetellAI API key (future)              |
 
 ## Google Sheets Setup
@@ -191,6 +195,49 @@ Google Sheets connected — spreadsheet=<ID> worksheet=Appointments
 | Booking Status     | Confirmed                      |
 | Created At         | 2026-07-06T12:32:25+00:00      |
 
+## Email Setup (SMTP)
+
+The backend sends a booking confirmation email after a successful appointment booking is persisted to Google Sheets. 
+If the SMTP credentials are not configured, the app operates in **disabled mode** — it logs a warning, skips email sending, and still processes the booking successfully.
+
+### Step 1 — Generate a Gmail App Password (if using Gmail)
+
+If you are using a standard Gmail account or Google Workspace, you cannot use your regular password. You must use an App Password:
+1. Go to your [Google Account Manage page](https://myaccount.google.com/).
+2. Navigate to **Security**.
+3. Ensure **2-Step Verification** is turned on.
+4. Go to **2-Step Verification** and scroll down to **App passwords**.
+5. Create a new App Password (e.g., name it "Voice Receptionist").
+6. Copy the 16-character password generated.
+
+### Step 2 — Configure Environment Variables
+
+```bash
+# In your .env file:
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your_email@gmail.com
+SMTP_PASSWORD=your_16_char_app_password
+SMTP_FROM_EMAIL=your_email@gmail.com
+SMTP_FROM_NAME="QuensultingAI Dental"
+```
+
+### Step 3 — Testing
+
+Start the server. Submit a booking request with a valid `caller_email`.
+The service will:
+1. Validate the booking.
+2. Persist the row to Google Sheets.
+3. Authenticate with the SMTP server and send a plain-text confirmation email to the caller.
+4. Return a successful booking API response.
+
+Check the logs for:
+```
+Email service enabled — host=smtp.gmail.com port=587 from_email=your_email@gmail.com
+...
+Confirmation email sent successfully for booking BK-XXXXX-XXXX
+```
+
 ## Architecture
 
 The codebase follows **clean architecture** principles:
@@ -217,7 +264,7 @@ Router → Service → External Integration
 | 2     | RetellAI conversation flow design      | ✅ Done |
 | 3.1   | Webhook APIs for RetellAI              | ✅ Done |
 | 3.2   | Google Sheets booking persistence      | ✅ Done |
-| 4     | Email confirmations via SMTP           | Planned |
+| 3.3   | Email confirmations via SMTP           | ✅ Done |
 | 5     | RetellAI agent integration             | Planned |
 
 ## License
