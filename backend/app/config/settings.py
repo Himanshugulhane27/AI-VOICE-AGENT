@@ -27,8 +27,9 @@ class Settings(BaseSettings):
     port: int = 8000
     log_level: str = "info"
 
-    # ---- Google Sheets (future) -------------------------------------------
+    # ---- Google Sheets -----------------------------------------------------
     google_sheet_id: str = ""
+    google_service_account_file: str = ""
 
     # ---- Email / SMTP (future) --------------------------------------------
     smtp_email: str = ""

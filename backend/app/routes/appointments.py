@@ -3,6 +3,7 @@
 import logging
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from app.schemas.appointments import (
     BookAppointmentRequest,
@@ -13,6 +14,7 @@ from app.schemas.appointments import (
     RescheduleAppointmentResponse,
 )
 from app.services import appointment_service
+from app.services.appointment_service import BookingPersistenceError
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +27,46 @@ router = APIRouter(prefix="/appointments", tags=["Appointments"])
     summary="Book a new appointment",
     description=(
         "Validates caller details and the selected service, date, and time, "
-        "then returns a booking confirmation with a unique booking ID. "
+        "then persists the booking to Google Sheets and returns a confirmation "
+        "with a unique booking ID. If persistence is configured but fails, "
+        "the endpoint returns a 503 error instead of a false success. "
         "Called by the RetellAI ``node_booking_api`` Function Node."
     ),
+    responses={
+        503: {
+            "description": "Booking persistence failed",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": False,
+                        "message": "Unable to complete booking — please try again.",
+                    }
+                }
+            },
+        }
+    },
 )
-async def book(request: BookAppointmentRequest) -> BookAppointmentResponse:
+async def book(request: BookAppointmentRequest) -> BookAppointmentResponse | JSONResponse:
     """Book a new dental appointment."""
     logger.info("POST /appointments/book — caller=%s", request.caller_name)
-    return appointment_service.book_appointment(request)
+    try:
+        return appointment_service.book_appointment(request)
+    except BookingPersistenceError:
+        logger.error(
+            "Booking persistence failure surfaced to caller — name=%s phone=%s",
+            request.caller_name,
+            request.caller_phone,
+        )
+        return JSONResponse(
+            status_code=503,
+            content={
+                "success": False,
+                "message": (
+                    "We were unable to complete your booking at this time. "
+                    "Please try again or contact the clinic directly."
+                ),
+            },
+        )
 
 
 @router.post(
@@ -65,3 +99,4 @@ async def reschedule(
     """Reschedule an existing appointment."""
     logger.info("POST /appointments/reschedule — caller=%s", request.caller_name)
     return appointment_service.reschedule_appointment(request)
+

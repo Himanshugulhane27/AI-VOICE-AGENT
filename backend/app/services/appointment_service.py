@@ -2,8 +2,12 @@
 
 Handles booking, cancellation, and rescheduling requests.
 All methods validate input, generate deterministic identifiers,
-and return response schemas.  Persistence will be added in a
-future phase (Google Sheets / database).
+and return response schemas.
+
+Booking persistence is delegated to :mod:`GoogleSheetsService`.
+When Google Sheets is configured, persistence occurs **before**
+the API reports success.  A failed write prevents a success
+response from being returned.
 """
 
 import hashlib
@@ -19,8 +23,18 @@ from app.schemas.appointments import (
     RescheduleAppointmentRequest,
     RescheduleAppointmentResponse,
 )
+from app.services.google_sheets_service import get_google_sheets_service
 
 logger = logging.getLogger(__name__)
+
+
+class BookingPersistenceError(Exception):
+    """Raised when Google Sheets is enabled but persistence fails.
+
+    This is a domain-level exception — it does not carry HTTP semantics.
+    The route handler is responsible for mapping it to an appropriate
+    HTTP status and response body.
+    """
 
 
 def _generate_id(prefix: str, *parts: str) -> str:
@@ -39,24 +53,68 @@ def _generate_id(prefix: str, *parts: str) -> str:
 def book_appointment(request: BookAppointmentRequest) -> BookAppointmentResponse:
     """Process an appointment booking request.
 
-    Generates a booking ID and returns a confirmation response.
-    The actual persistence (e.g. Google Sheets row insert) will
-    be injected here in a future phase.
+    Orchestration order:
+        1. Generate booking ID.
+        2. If Google Sheets is enabled → persist the row.
+           - On success → proceed to build the response.
+           - On failure → raise :class:`BookingPersistenceError`.
+        3. If Google Sheets is disabled → log a warning and proceed.
+        4. Build and return the success response.
+
+    Raises:
+        BookingPersistenceError: If Google Sheets is enabled but the
+            append operation failed.
     """
+    # ---- Step 1: Generate booking ID & resolve display values ---------------
     booking_id = _generate_id("BK", request.caller_name, request.caller_phone)
     service_name = SERVICE_DISPLAY_NAMES.get(
         request.selected_service, request.selected_service.value
     )
+    preferred_date_str = request.preferred_date.isoformat()
+    preferred_time_str = request.preferred_time.strftime("%H:%M")
 
     logger.info(
-        "Appointment booked — id=%s name=%s phone=%s service=%s date=%s time=%s",
+        "Booking request validated — id=%s name=%s phone=%s service=%s date=%s time=%s",
         booking_id,
         request.caller_name,
         request.caller_phone,
         service_name,
-        request.preferred_date.isoformat(),
-        request.preferred_time.strftime("%H:%M"),
+        preferred_date_str,
+        preferred_time_str,
     )
+
+    # ---- Step 2: Persist BEFORE reporting success --------------------------
+    sheets = get_google_sheets_service()
+
+    if sheets.is_enabled:
+        logger.info("Persisting booking to Google Sheets — id=%s", booking_id)
+        persisted = sheets.append_booking_row(
+            booking_id=booking_id,
+            caller_name=request.caller_name,
+            caller_phone=request.caller_phone,
+            caller_email=request.caller_email or "",
+            selected_service=service_name,
+            preferred_date=preferred_date_str,
+            preferred_time=preferred_time_str,
+        )
+        if not persisted:
+            logger.error(
+                "Booking persistence failed — id=%s — "
+                "will NOT report success to caller",
+                booking_id,
+            )
+            raise BookingPersistenceError(
+                f"Failed to persist booking {booking_id} to Google Sheets. "
+                f"The appointment was not recorded."
+            )
+    else:
+        logger.warning(
+            "Google Sheets disabled — booking %s accepted without persistence",
+            booking_id,
+        )
+
+    # ---- Step 3: Build success response (only reached if persist succeeded) -
+    logger.info("Booking confirmed — id=%s", booking_id)
 
     return BookAppointmentResponse(
         success=True,
@@ -65,8 +123,8 @@ def book_appointment(request: BookAppointmentRequest) -> BookAppointmentResponse
         caller_name=request.caller_name,
         caller_phone=request.caller_phone,
         selected_service=service_name,
-        preferred_date=request.preferred_date.isoformat(),
-        preferred_time=request.preferred_time.strftime("%H:%M"),
+        preferred_date=preferred_date_str,
+        preferred_time=preferred_time_str,
     )
 
 
@@ -118,3 +176,5 @@ def reschedule_appointment(
         new_date=request.new_date.isoformat(),
         new_time=request.new_time.strftime("%H:%M"),
     )
+
+
